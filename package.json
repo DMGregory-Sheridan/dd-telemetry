@@ -1,0 +1,31 @@
+{
+  "name": "dd-telemetry",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telemetry server for Data & Design",
+  "engines": {
+    "node": "20.x"
+  },
+  "main": "telemetryserver.js",
+  "scripts": {
+    "start": "node telemetryserver.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.0.1",
+    "pg": "^8.7.3",
+    "short-uuid": "^4.2.0"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
+}

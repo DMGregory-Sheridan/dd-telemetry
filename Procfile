@@ -1,0 +1,1 @@
+web: node telemetryserver.js
