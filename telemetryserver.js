@@ -196,7 +196,7 @@ function recordEntry(client, table, session, version, section, eventType, time, 
  * @param {string} section Identifier for source of the message in-game (level/menu/mode/etc).
  * @returns {AuthResult} Structure with session info or error message.
  */
-async function tryBeginSession(sanitizedName, userSecret, version, section) {
+async function tryBeginSession(sanitizedName, userSecret, version, section, setupId) {
 
     if (!authenticate(sanitizedName, userSecret)) {
         return {sessionId: -1, message: 'Failed to authenticate. Please double check that you spelled your user name and secret key correctly.'};
@@ -232,7 +232,7 @@ async function tryBeginSession(sanitizedName, userSecret, version, section) {
             message = `Successfully authenticated ${sanitizedName} session #${sessionId}.`;
         }
 
-        await recordEntry(client, sanitizedName, sessionId, version, section, 'SessionStart', new Date(), {});
+        await recordEntry(client, sanitizedName, sessionId, version, section, 'SessionStart', new Date(), {setup: setupId});
 
         await client.query('COMMIT');
 
