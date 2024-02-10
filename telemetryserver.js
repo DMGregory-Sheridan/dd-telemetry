@@ -283,9 +283,10 @@ async function tryConnect(req, res) {
     const version = textOrPlaceholder(req.body.version);
     /**@type {string} */
     const section = textOrPlaceholder(req.body.section);
+    const setupId = textOrPlaceholder(req.body.setupId);
 
     // Attempt to authenticate and start a new Telemetry Session.
-    const {sessionId, message} = await tryBeginSession(sanitizedName, secret, version, section);
+    const {sessionId, message} = await tryBeginSession(sanitizedName, secret, version, section, setupId);
 
     // A negative session index indicates something went wrong. Send error message and abort.
     if (sessionId < 0) { res.status(HTTP_BAD_REQUEST).send(message); return; }
