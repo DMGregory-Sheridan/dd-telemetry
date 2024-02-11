@@ -207,6 +207,8 @@ function recordEntry(client, table, session, version, section, eventType, time, 
  * @param {string} userSecret Passphrase used to validate access.
  * @param {string} version Identifier for game build / update version.
  * @param {string} section Identifier for source of the message in-game (level/menu/mode/etc).
+ * @param {Date} time Timestamp sent by the client.
+ * @param {string} setupId Marker for how the telemetry package was configured.
  * @returns {AuthResult} Structure with session info or error message.
  */
 async function tryBeginSession(sanitizedName, userSecret, version, section, time, setupId) {
@@ -300,6 +302,9 @@ async function tryConnect(req, res) {
 
     const time = dateOrInvalid(req.body.timecode);
     if (isNaN(time.valueOf)) { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
+
+
+    console.log('timecode:', time);
 
     // Attempt to authenticate and start a new Telemetry Session.
     const {sessionId, message} = await tryBeginSession(sanitizedName, secret, version, section, time, setupId);
