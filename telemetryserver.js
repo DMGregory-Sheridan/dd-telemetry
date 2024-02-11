@@ -89,6 +89,19 @@ function isValidString(text) {
 }
 
 /**
+ * 
+ * @param {any} timecode 
+ * @returns {Date} (possibly invalid) converted Date object
+ */
+function dateOrInvalid(timecode) {
+    if (isValidInteger(timecode) || isValidString(timecode)) {
+        return new Date(timecode);
+    }
+
+    return new Date(NaN);
+}
+
+/**
  * @param {string} text 
  * @returns {boolean} True if the provided string starts with a lowercase alphabetical character.
  */
@@ -196,7 +209,7 @@ function recordEntry(client, table, session, version, section, eventType, time, 
  * @param {string} section Identifier for source of the message in-game (level/menu/mode/etc).
  * @returns {AuthResult} Structure with session info or error message.
  */
-async function tryBeginSession(sanitizedName, userSecret, version, section, setupId) {
+async function tryBeginSession(sanitizedName, userSecret, version, section, time, setupId) {
 
     if (!authenticate(sanitizedName, userSecret)) {
         return {sessionId: -1, message: 'Failed to authenticate. Please double check that you spelled your user name and secret key correctly.'};
@@ -230,9 +243,9 @@ async function tryBeginSession(sanitizedName, userSecret, version, section, setu
             sessionId++;
 
             message = `Successfully authenticated ${sanitizedName} session #${sessionId}.`;
-        }
+        }        
 
-        await recordEntry(client, sanitizedName, sessionId, version, section, 'SessionStart', new Date(), {setup: setupId});
+        await recordEntry(client, sanitizedName, sessionId, version, section, 'SessionStart', time, {setup: setupId});
 
         await client.query('COMMIT');
 
@@ -279,14 +292,15 @@ async function tryConnect(req, res) {
 
     /**@type {string} */
     const secret = req.body.secret.trim();
-    /**@type {string} */
     const version = textOrPlaceholder(req.body.version);
-    /**@type {string} */
     const section = textOrPlaceholder(req.body.section);
     const setupId = textOrPlaceholder(req.body.setupId);
 
+    const time = dateOrInvalid(req.body.timecode);
+    if (isNaN(time.valueOf)) { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
+
     // Attempt to authenticate and start a new Telemetry Session.
-    const {sessionId, message} = await tryBeginSession(sanitizedName, secret, version, section, setupId);
+    const {sessionId, message} = await tryBeginSession(sanitizedName, secret, version, section, time, setupId);
 
     // A negative session index indicates something went wrong. Send error message and abort.
     if (sessionId < 0) { res.status(HTTP_BAD_REQUEST).send(message); return; }
@@ -336,10 +350,8 @@ async function tryLogEvent(req, res) {
     if (req.body.sequence < session.nextSequence) {res.status(200).send(); return;}
     
     // Decode event timestamp as Date.
-    let time;
-    if (isValidInteger(req.body.timecode) || isValidString(req.body.timecode)) {
-        time = new Date(req.body.timecode);
-    } else { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
+    const time = dateOrInvalid(req.body.timecode);
+    if (isNaN(time.valueOf)) { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
 
     // Ensure an event type was specified.
     if (!isValidString(req.body.eventType)) {res.status(HTTP_BAD_REQUEST).send('Invalid event type.'); return; }
