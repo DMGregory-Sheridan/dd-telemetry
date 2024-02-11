@@ -300,8 +300,13 @@ async function tryConnect(req, res) {
     const section = textOrPlaceholder(req.body.section);
     const setupId = textOrPlaceholder(req.body.setupId);
 
-    const time = dateOrInvalid(req.body.timecode);
-    if (isNaN(time.valueOf)) { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
+    let time;
+    try {
+        time = dateOrInvalid(req.body.timecode);
+        if (isNaN(time.valueOf)) { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
+    } catch(e) {
+        console.log('Time parsing error', e.message);
+    }
 
 
     console.log('timecode:', time);
