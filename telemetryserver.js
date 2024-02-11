@@ -308,7 +308,11 @@ async function tryConnect(req, res) {
     let time;
     try {
         time = dateOrInvalid(req.body.timecode);
-        if (isNaN(time.valueOf)) { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
+        if (isNaN(time.valueOf)) { 
+            res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); 
+            console.log('invalid time', time);
+            return; 
+        }
     } catch(e) {
         console.log('Time parsing error', e.message);
     }
