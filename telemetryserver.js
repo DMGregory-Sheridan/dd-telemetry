@@ -281,6 +281,8 @@ async function awake(req, res) {
  */
 async function tryConnect(req, res) {
 
+    console.log('Authenticating... ', req.body);
+
     // Validate, parse, sanitize data in connection request.
     if (!req.body) { res.status(HTTP_BAD_REQUEST).send('Authentication message had no body.'); return; }
     if (!isValidString(req.body.userName)) { res.status(HTTP_BAD_REQUEST).send('Invalid user name.'); return; }
@@ -320,6 +322,8 @@ async function tryConnect(req, res) {
         lastAccess: Date.now(),
         nextSequence: 0
     };
+
+    console.log('authentication success', sessionId);
 
     // Send session start confirmation.
     res.send({sessionKey: sessionKey, sessionIndex: sessionId, message: message});
