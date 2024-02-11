@@ -298,7 +298,12 @@ async function tryConnect(req, res) {
     const secret = req.body.secret.trim();
     const version = textOrPlaceholder(req.body.version);
     const section = textOrPlaceholder(req.body.section);
+
+    console.log('all legacy data parsed.');
+
     const setupId = textOrPlaceholder(req.body.setupId);
+
+    console.log('about to parse time.');
 
     let time;
     try {
