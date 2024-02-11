@@ -308,7 +308,7 @@ async function tryConnect(req, res) {
     let time;
     try {
         time = dateOrInvalid(req.body.timecode);
-        if (isNaN(time.valueOf)) { 
+        if (isNaN(time.valueOf())) { 
             res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); 
             console.log('invalid time', time);
             return; 
@@ -374,7 +374,7 @@ async function tryLogEvent(req, res) {
     
     // Decode event timestamp as Date.
     const time = dateOrInvalid(req.body.timecode);
-    if (isNaN(time.valueOf)) { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
+    if (isNaN(time.valueOf())) { res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); return; }
 
     // Ensure an event type was specified.
     if (!isValidString(req.body.eventType)) {res.status(HTTP_BAD_REQUEST).send('Invalid event type.'); return; }
