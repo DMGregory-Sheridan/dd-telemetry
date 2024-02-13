@@ -282,9 +282,6 @@ async function awake(req, res) {
  * @param {express.Response} res 
  */
 async function tryConnect(req, res) {
-
-    console.log('Authenticating... ', req.body);
-
     // Validate, parse, sanitize data in connection request.
     if (!req.body) { res.status(HTTP_BAD_REQUEST).send('Authentication message had no body.'); return; }
     if (!isValidString(req.body.userName)) { res.status(HTTP_BAD_REQUEST).send('Invalid user name.'); return; }
@@ -298,27 +295,14 @@ async function tryConnect(req, res) {
     const secret = req.body.secret.trim();
     const version = textOrPlaceholder(req.body.version);
     const section = textOrPlaceholder(req.body.section);
-
-    console.log('all legacy data parsed.');
-
     const setupId = textOrPlaceholder(req.body.setupId);
 
-    console.log('about to parse time.');
-
     let time;
-    try {
-        time = dateOrInvalid(req.body.timecode);
-        if (isNaN(time.valueOf())) { 
-            res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); 
-            console.log('invalid time', time);
-            return; 
-        }
-    } catch(e) {
-        console.log('Time parsing error', e.message);
+    time = dateOrInvalid(req.body.timecode);
+    if (isNaN(time.valueOf())) { 
+        res.status(HTTP_BAD_REQUEST).send(`Invalid timestamp. ${typeof req.body.timecode} = ${req.body.timecode}`); 
+        return; 
     }
-
-
-    console.log('timecode:', time);
 
     // Attempt to authenticate and start a new Telemetry Session.
     const {sessionId, message} = await tryBeginSession(sanitizedName, secret, version, section, time, setupId);
@@ -341,9 +325,7 @@ async function tryConnect(req, res) {
         lastAccess: Date.now(),
         nextSequence: 0
     };
-
-    console.log('authentication success', sessionId);
-
+    
     // Send session start confirmation.
     res.send({sessionKey: sessionKey, sessionIndex: sessionId, message: message});
 }
