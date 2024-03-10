@@ -131,7 +131,7 @@ function textOrPlaceholder(text) {
  * @returns {string} Canonical SQL-safe version. 
  */
 function toTableName(name) {
-    return name.toLowerCase().replace(/[\s-]/g, '_').replace(/[.,';:]/g, '');
+    return name.toLowerCase().replace(/[\s-]/g, '_').replace(/[.,'"";:?~!@#$%^&*()[\]{}<>\\/|]/g, '');
 }
 
 /**
@@ -143,7 +143,7 @@ function toTableName(name) {
  * @returns {boolean} True if the user is authenticated.
  */
 function authenticate(userName, userSecret) {
-    return process.env[`user_${userName}`.toUpperCase()] === userSecret;
+    return process.env[`USER_${userName.toUpperCase()}`] === userSecret;
 }
 
 //#region Database Transactions
