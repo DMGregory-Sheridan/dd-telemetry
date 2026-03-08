@@ -4,7 +4,7 @@
   "private": true,
   "description": "Telemetry server for Data & Design",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "main": "telemetryserver.js",
   "scripts": {

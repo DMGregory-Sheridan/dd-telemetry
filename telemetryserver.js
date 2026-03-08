@@ -49,15 +49,16 @@ const sessions = {};
     
     const client = await pool.connect();
     try {
-        // Set to true when clearing specific DBs.
-        const reset = false;
+        const RESET_KEY = 'RESET_TABLES';
+        const toReset = process.env[RESET_KEY];
 
-        if (reset) {
+        if (toReset) {
             await client.query('BEGIN');
-            await client.query('DROP TABLE testing, gregdoug');
-            await client.query('COMMIT');       
-            
-            console.log('Cleared old databases.');
+            await client.query(`DROP TABLE ${toReset}`);
+            await client.query('COMMIT');            
+                       
+            console.log(`Cleared old database table(s): ${toReset}`);
+            delete process.env[RESET_KEY]; 
         }
 
     } catch (e) {
