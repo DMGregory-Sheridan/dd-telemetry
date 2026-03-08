@@ -248,7 +248,7 @@ async function tryBeginSession(sanitizedName, userSecret, version, section, time
             message = `Successfully authenticated ${sanitizedName} session #${sessionId}.`;
         }        
 
-        await recordEntry(client, sanitizedName, sessionId, version, section, 'SessionStart', time, {});
+        await recordEntry(client, sanitizedName, sessionId, version, section, 'SessionStart', time, {setup: setupId});
 
         await client.query('COMMIT');
 
